@@ -17,6 +17,10 @@ The general [reference] and [API] documentation is a good place to start.
 
 Since Bento is a library, to install it `go get github.com/ongyx/bento` should suffice.
 
+## Credits
+
+Hajime Hoshi for creating [bento].
+
 ## License
 
 Bento is licensed under the MIT License.
