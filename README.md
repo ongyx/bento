@@ -19,7 +19,7 @@ Since Bento is a library, to install it `go get github.com/ongyx/bento` should s
 
 ## Credits
 
-Hajime Hoshi for creating [bento].
+Hajime Hoshi for creating Ebiten.
 
 ## License
 
