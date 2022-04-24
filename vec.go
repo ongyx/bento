@@ -98,7 +98,7 @@ func (vec *Vec) draw(clr color.Color) ([]ebiten.Vertex, []uint16) {
 	return vs, is
 }
 
-// Draw renders this vector path with color to an image.
+// Draw renders the vector's path with color to an image.
 func (vec *Vec) Draw(
 	clr color.Color,
 	img *ebiten.Image,
@@ -109,7 +109,7 @@ func (vec *Vec) Draw(
 	img.DrawTriangles(vs, is, empty, o)
 }
 
-// DrawShader renders this vector path with a shader to an image.
+// DrawShader renders the vector's path with a shader to an image.
 func (vec *Vec) DrawShader(
 	clr color.Color,
 	img *ebiten.Image,

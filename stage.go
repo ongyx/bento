@@ -9,14 +9,22 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// StageOptions defines various options for the stage.
+// If Font is not nil, a TPS counter is drawn on the top-left of the screen.
+// If Size is not nil, it will be used as the screen (window) size.
+type StageOptions struct {
+	Font *Font
+	Size *image.Point
+}
+
 // Stage is a scene manager which implements the ebiten.Game interface.
 // The current scene must never be nil.
 // If debug is not nil, debug mode is enabled.
 type Stage struct {
-	debug   *Debug
-	scene   Scene
-	entites []*Entity
+	Op StageOptions
 
+	scene      Scene
+	entites    []*Entity
 	transition *Transition
 
 	// snapshot holds the last rendered frame of the current scene.
@@ -26,11 +34,8 @@ type Stage struct {
 
 // NewStage creates a stage with an inital scene.
 // NOTE: The initial scene's enter animation is rendered!
-func NewStage(initial Scene, debug *Debug) *Stage {
-	s := &Stage{
-		debug:      debug,
-		transition: NewTransition(),
-	}
+func NewStage(initial Scene) *Stage {
+	s := &Stage{transition: NewTransition()}
 	s.Change(initial)
 
 	return s
@@ -93,9 +98,9 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 	s.transition.Draw(screen)
 
-	if s.debug != nil {
+	if s.Op.Font != nil {
 		// draw tps/fps at the top left of the screen
-		s.debug.Font.Write(
+		s.Op.Font.Write(
 			fmt.Sprintf("tps: %0.2f", ebiten.CurrentTPS()),
 			color.White,
 			screen,
@@ -107,6 +112,9 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 // Layout returns the screen's size.
 func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	if s.Op.Size != nil {
+		return s.Op.Size.X, s.Op.Size.Y
+	}
 	return DPIScale(outsideWidth), DPIScale(outsideHeight)
 }
 
