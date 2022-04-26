@@ -115,7 +115,7 @@ func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeig
 	if s.Op.Size != nil {
 		return s.Op.Size.X, s.Op.Size.Y
 	}
-	return DPIScale(outsideWidth), DPIScale(outsideHeight)
+	return int(DPIScale(outsideWidth)), int(DPIScale(outsideHeight))
 }
 
 func (s *Stage) updateEntities() error {

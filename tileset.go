@@ -69,28 +69,6 @@ func (t *Tileset) Tile(index int) *ebiten.Image {
 	return tile
 }
 
-// Render renders the tileset to an image, given a tilemap.
-// The tilemap must have at least one row, and all rows must have equal length.
-func (t *Tileset) Render(tilemap [][]int) *ebiten.Image {
-	w := len(tilemap[0]) * t.tsize
-	h := len(tilemap) * t.tsize
-	img := ebiten.NewImage(w, h)
-
-	for y, row := range tilemap {
-		for x, index := range row {
-			dx := x * t.tsize
-			dy := y * t.tsize
-
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(float64(dx), float64(dy))
-
-			img.DrawImage(t.Tile(index), op)
-		}
-	}
-
-	return img
-}
-
 func (t *Tileset) tile(index int) *ebiten.Image {
 	x := (index % t.size.X) * t.tsize
 	y := (index / t.size.X) * t.tsize

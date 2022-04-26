@@ -41,6 +41,11 @@ func Radian(degree float64) float64 {
 
 // DPIScale scales the given resolution by the device's scale factor.
 // This allows high-DPI rendering.
-func DPIScale(res int) int {
-	return int(float64(res) * ebiten.DeviceScaleFactor())
+func DPIScale(res int) float64 {
+	return float64(res) * ebiten.DeviceScaleFactor()
+}
+
+// Coordinate returns the given point as a float64 pair.
+func Coordinate(point image.Point) (x, y float64) {
+	return float64(point.X), float64(point.Y)
 }
