@@ -17,9 +17,6 @@
 // 	func (d *demo) Enter() bento.Animation { return nil }
 // 	func (d *demo) Exit() bento.Animation { return nil }
 //
-// 	// Entities are the core of any 2D game made with bento; the scene is a special entity that renders other entities.
-// 	func (d *demo) Entities() []*bento.Entity { return nil }
-//
 // 	func main() {
 // 		stage := bento.NewStage(&demo{})
 // 		ebiten.SetWindowTitle("Hello World!")

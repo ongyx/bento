@@ -17,25 +17,12 @@ type Entity struct {
 	*Transition
 
 	Op *ebiten.DrawImageOptions
-
-	Closure Closure
 }
 
 // NewEntity constructs an entity from a sprite.
 // Entities are hidden by default.
-func NewEntity(sprite Sprite, closure Closure) *Entity {
-	return &Entity{Sprite: sprite, Transition: NewTransition(), Op: &ebiten.DrawImageOptions{}, Closure: closure}
-}
-
-// NewEntities constructs a slice of entities from several sprites.
-func NewEntities(sprites ...Sprite) []*Entity {
-	// alloc slice with the exact size
-	es := make([]*Entity, len(sprites))
-	for i, s := range sprites {
-		es[i] = NewEntity(s, nil)
-	}
-
-	return es
+func NewEntity(sprite Sprite) *Entity {
+	return &Entity{Sprite: sprite, Transition: NewTransition(), Op: &ebiten.DrawImageOptions{}}
 }
 
 // Update updates the sprite's state.
@@ -56,10 +43,6 @@ func (e *Entity) Draw(screen *ebiten.Image) {
 	size := screen.Bounds().Size()
 
 	render := e.Sprite.Render(e, size)
-
-	if e.Closure != nil {
-		e.Closure(render, e, size)
-	}
 
 	e.Transition.Draw(render)
 

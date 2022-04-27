@@ -16,6 +16,8 @@ A sprite is a component that can render to an image.
 
 An entity contains a sprite to draw to the screen, as well as it's rendering state such as the options used to draw the sprite to the screen.
 
+Sprites can be wrapped with `NewEntity` to create an entity.
+
 ## Animation
 
 An animation is a component that draws on top of a sprite/scene for a finite number of ticks.
@@ -30,9 +32,6 @@ Transitions also control the visibility of a sprite.
 
 A scene is a special kind of entity: it renders other entities to the screen, and optionally draws other non-entity images over them.
 This can be considered analogous to a game level.
-
-Bento renders the slice of entities returned from the `Entities` method of a scene in order; from first to last.
-This allows you to control how entities overlap in a scene.
 
 ## Stage
 

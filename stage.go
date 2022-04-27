@@ -24,7 +24,6 @@ type Stage struct {
 	Op StageOptions
 
 	scene      Scene
-	entites    []*Entity
 	transition *Transition
 
 	// snapshot holds the last rendered frame of the current scene.
@@ -52,16 +51,11 @@ func (s *Stage) Change(newScene Scene) {
 	}
 
 	s.scene = newScene
-	s.entites = newScene.Entities()
 }
 
 // Update updates the current scene's state.
 func (s *Stage) Update() error {
 	if s.transition.RenderState() != Exiting {
-		if err := s.updateEntities(); err != nil {
-			return err
-		}
-
 		if err := s.scene.Update(s); err != nil {
 			return err
 		}
@@ -90,7 +84,6 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 	if s.transition.RenderState() != Exiting {
 		//log.Printf("(%p) drawing to snapshot with %v state\n", s.scene, s.transition.RenderState())
 		s.snapshot.Clear()
-		s.drawEntities(s.snapshot)
 		s.scene.Draw(s.snapshot)
 	}
 
@@ -116,20 +109,4 @@ func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeig
 		return s.Op.Size.X, s.Op.Size.Y
 	}
 	return int(DPIScale(outsideWidth)), int(DPIScale(outsideHeight))
-}
-
-func (s *Stage) updateEntities() error {
-	for _, e := range s.entites {
-		if err := e.Update(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (s *Stage) drawEntities(screen *ebiten.Image) {
-	for _, e := range s.entites {
-		e.Draw(screen)
-	}
 }
