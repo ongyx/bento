@@ -17,7 +17,7 @@ The [API] documentation is a good place to start.
 
 Some documents that you might want to read:
 
-- [`concepts`](concepts.md): Core concepts that Bento is built upon.
+- [`concepts`](docs/concepts.md): Core concepts that Bento is built upon.
 
 ## Install
 
