@@ -1,20 +1,16 @@
 package bento
 
-// RenderState represents the rendering state of an entity on the stage.
-//
-// The render lifecycle has several states:
-// Hidden (default): The entity is not rendering to the screen.
-// Entering: An enter transition is being rendered on the entity.
-// Visible: The entity is rendering normally.
-// Exiting: An exit transition is being rendered on the entity.
-//
-// After an entity has exited the stage, the render state will change back to Hidden.
+// RenderState represents the rendering state/lifecycle of an entity on the stage.
 //go:generate stringer -type=RenderState
 type RenderState int
 
 const (
+	// Hidden indicates the entity is not drawing to the screen.
 	Hidden RenderState = iota
+	// Entering indicates a enter transition is rendering on the entity.
 	Entering
+	// Visible indicates the entity is drawing normally to the screen.
 	Visible
+	// Exiting indicates a exit transition is rendering on the entity.
 	Exiting
 )

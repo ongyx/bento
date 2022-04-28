@@ -12,9 +12,11 @@ import (
 // StageOptions defines various options for the stage.
 // If Font is not nil, a TPS counter is drawn on the top-left of the screen.
 // If Size is not nil, it will be used as the screen (window) size.
+// If HiDPI is true, the screen size is scaled to the device scale factor.
 type StageOptions struct {
-	Font *Font
-	Size *image.Point
+	Font  *Font
+	Size  *image.Point
+	HiDPI bool
 }
 
 // Stage is a scene manager which implements the ebiten.Game interface.
@@ -108,8 +110,20 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 // Layout returns the screen's size.
 func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	var w, h int
+
 	if s.Op.Size != nil {
-		return s.Op.Size.X, s.Op.Size.Y
+		w = s.Op.Size.X
+		h = s.Op.Size.Y
+	} else {
+		w = outsideWidth
+		h = outsideHeight
 	}
-	return int(DPIScale(outsideWidth)), int(DPIScale(outsideHeight))
+
+	if s.Op.HiDPI {
+		w = int(DPIScale(w))
+		h = int(DPIScale(h))
+	}
+
+	return w, h
 }

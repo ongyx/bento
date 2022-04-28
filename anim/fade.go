@@ -36,7 +36,6 @@ func NewFade(in bool, clr color.Color, duration float64) *Fade {
 }
 
 func (f *Fade) Update() error {
-	f.delta.Update()
 	a, _ := f.delta.Delta()
 
 	if f.in {
@@ -44,6 +43,8 @@ func (f *Fade) Update() error {
 	}
 
 	f.color.A = uint8(a)
+
+	f.delta.Update()
 
 	return nil
 }

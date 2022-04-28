@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+// Transition is a animation drawn over an entity while it is entering or exiting the stage.
 type Transition struct {
 	rs   RenderState
 	anim Animation

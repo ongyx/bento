@@ -13,9 +13,15 @@ However, you can (and should) use Ebiten directly for finer-grained control over
 
 ## Getting Started
 
-The general [reference] and [API] documentation is a good place to start.
+The [API] documentation is a good place to start.
 
-Since Bento is a library, to install it `go get github.com/ongyx/bento` should suffice.
+Some documents that you might want to read:
+
+- [`concepts`](concepts.md): Core concepts that Bento is built upon.
+
+## Install
+
+`go get github.com/ongyx/bento`
 
 ## Credits
 

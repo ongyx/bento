@@ -30,9 +30,9 @@ func NewScroll(font *Font, tx string) *Scroll {
 }
 
 // SetSpeed changes the speed of scrolling text,
-// where secs is the number of seconds to wait between scrolling each character and must be positive.
-func (s *Scroll) SetSpeed(secs float64) {
-	s.timer = NewTimer(secs, false)
+// where n is the number of seconds to wait between scrolling each character.
+func (s *Scroll) SetSpeed(n float64) {
+	s.timer = NewTimer(n, false)
 }
 
 // Text returns the current text in the scroll.

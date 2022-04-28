@@ -11,8 +11,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text"
 )
 
-const padding = 10
-
 // Font is a wrapper around a fontface, used to render text to images.
 type Font struct {
 	Face font.Face

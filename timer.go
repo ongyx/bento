@@ -23,6 +23,10 @@ type Timer struct {
 // NewTimer creates a new timer that triggers every n seconds.
 // If once is true, the timer will only trigger once.
 func NewTimer(n float64, once bool) *Timer {
+	if n <= 0 {
+		panic(fmt.Sprintf("timer: negative n (%f)", n))
+	}
+
 	if d := SecondToTick(n); d == 0 {
 		panic(fmt.Sprintf("timer: duration of n too small (%f)", n))
 	} else {
