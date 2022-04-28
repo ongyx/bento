@@ -19,7 +19,7 @@ type DeltaAlgorithm int
 // Delta is a delta that changes over time.
 type Delta struct {
 	delta image.Point
-	clock *Clock
+	timer *Timer
 
 	index, limit int
 
@@ -28,16 +28,16 @@ type Delta struct {
 
 // NewDelta creates an delta with the total delta, and the period over which to increase the current delta.
 func NewDelta(
-	dalgo DeltaAlgorithm,
+	algo DeltaAlgorithm,
 	delta image.Point,
 	period float64,
 ) *Delta {
-	c := NewClockOnce(period)
+	t := NewTimer(period, true)
 
-	l := c.Limit()
+	dt := t.Delta()
 	// TODO(ongyx): a more efficient way to store the delta per tick?
-	dx := make([]float64, l)
-	dy := make([]float64, l)
+	dx := make([]float64, dt)
+	dy := make([]float64, dt)
 
 	// some algorithms require the start to be at least 1, so add 1 to the delta here.
 	delta.X += 1
@@ -46,23 +46,23 @@ func NewDelta(
 	x := float64(delta.X)
 	y := float64(delta.Y)
 
-	var algo func([]float64, float64, float64) []float64
+	var algoFunc func(buf []float64, from, to float64) []float64
 
-	switch dalgo {
+	switch algo {
 	case Linear:
-		algo = floats.Span
+		algoFunc = floats.Span
 	case Exponential:
-		algo = floats.LogSpan
+		algoFunc = floats.LogSpan
 	}
 
-	algo(dx, 1, x)
-	algo(dy, 1, y)
+	algoFunc(dx, 1, x)
+	algoFunc(dy, 1, y)
 
 	return &Delta{
 		delta: delta,
-		clock: c,
-		index: -1,
-		limit: l - 1,
+		timer: t,
+		index: 0,
+		limit: dt,
 		dx:    dx,
 		dy:    dy,
 	}
@@ -70,24 +70,16 @@ func NewDelta(
 
 // Update updates the delta.
 func (d *Delta) Update() {
-	d.clock.Tick()
+	d.index++
 
-	if d.clock.Done() {
-		d.index = d.limit
-	}
-
-	if d.index < d.limit {
-		d.index++
+	if d.timer.Done() || d.index >= d.limit {
+		d.index = d.limit - 1
 	}
 }
 
 // Delta returns the current delta.
 // This will panic if delta has not been updated yet.
 func (d *Delta) Delta() (x, y float64) {
-	if d.index == -1 {
-		panic(&InitError{"delta", "invalid index"})
-	}
-
 	// special case: if x/y delta is 0, return 0 here too
 	// otherwise it will return NaN
 	if d.delta.X != 0 {
@@ -108,5 +100,5 @@ func (d *Delta) DeltaPt() image.Point {
 
 // Done checks if the current delta is equal to the total delta.
 func (d *Delta) Done() bool {
-	return d.index == d.limit
+	return d.index == (d.limit - 1)
 }

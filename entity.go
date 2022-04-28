@@ -1,13 +1,8 @@
 package bento
 
 import (
-	"image"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
-
-// Closure is a function that is called after a sprite renders but before any transition draws on it.
-type Closure func(img *ebiten.Image, entity *Entity, size image.Point)
 
 // Entity is a sprite with rendering state.
 // While a sprite renders to an image, an entity handles drawing the rendered image to the screen.

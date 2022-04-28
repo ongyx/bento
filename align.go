@@ -69,13 +69,15 @@ func (a Align) Align(point, size image.Point) image.Point {
 	return point
 }
 
-// Point calculates a point in the bounds of an image.
-func (a Align) Point(bounds image.Rectangle) image.Point {
-	// top-left point
-	p := bounds.Min
+// Point calculates a point in an image.
+func (a Align) Point(img image.Image) image.Point {
+	b := img.Bounds()
 
-	w := bounds.Dx()
-	h := bounds.Dy()
+	// top-left point
+	p := b.Min
+
+	w := b.Dx()
+	h := b.Dy()
 
 	if a.Has(Right) {
 		p.X += w

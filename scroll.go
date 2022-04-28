@@ -17,24 +17,22 @@ type Scroll struct {
 	tend  int
 	tsize image.Point
 
-	clock *Clock
+	timer *Timer
 }
 
 // NewScroll creates a new scroll.
 func NewScroll(font *Font, tx string) *Scroll {
-	s := &Scroll{
-		Font:  font,
-		clock: NewClock(0.03),
-	}
+	s := &Scroll{Font: font}
+	s.SetSpeed(0.03)
 	s.SetText(tx)
 
 	return s
 }
 
-// Speed changes the speed of scrolling text,
+// SetSpeed changes the speed of scrolling text,
 // where secs is the number of seconds to wait between scrolling each character and must be positive.
-func (s *Scroll) Speed(secs float64) {
-	s.clock.Schedule(secs)
+func (s *Scroll) SetSpeed(secs float64) {
+	s.timer = NewTimer(secs, false)
 }
 
 // Text returns the current text in the scroll.
@@ -69,9 +67,7 @@ func (s *Scroll) Size() image.Point {
 
 // Update updates the state of the scroll.
 func (s *Scroll) Update() {
-	s.clock.Tick()
-
-	if s.clock.Done() && s.tpos < s.tend {
+	if s.timer.Done() && s.tpos < s.tend {
 		s.tpos++
 	}
 }
@@ -86,7 +82,7 @@ func (s *Scroll) Draw(
 	t := s.text
 
 	if s.tpos < s.tend {
-		t = t[:s.tpos+1]
+		t = t[:s.tpos]
 	}
 
 	s.Font.Draw(t, clr, img, point)

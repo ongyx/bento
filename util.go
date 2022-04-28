@@ -49,3 +49,18 @@ func DPIScale(res int) float64 {
 func Coordinate(point image.Point) (x, y float64) {
 	return float64(point.X), float64(point.Y)
 }
+
+// Point returns the point of a geometry matrix.
+func Point(m *ebiten.GeoM) image.Point {
+	return image.Pt(int(m.Element(0, 2)), int(m.Element(1, 2)))
+}
+
+// SecondToTick converts seconds to ticks.
+func SecondToTick(seconds float64) int {
+	return int(seconds * tps)
+}
+
+// TickToSecond converts ticks to seconds.
+func TickToSecond(ticks int) float64 {
+	return float64(ticks) / tps
+}

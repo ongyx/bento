@@ -101,6 +101,9 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 			Default,
 		)
 	}
+
+	// update tick
+	Clock.increment()
 }
 
 // Layout returns the screen's size.
