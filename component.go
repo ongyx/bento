@@ -1,22 +1,24 @@
 package bento
 
 // Component is a state that updates every tick.
-// Update should be called _after_ using a sub-component's state, i.e
+//
+// If a component uses another component, it should be updated before using its state:
 //
 //	type myComponent struct {
-//		sub Component
-//	}
+// 		child Component
+// 	}
 //
-//	func (mc *myComponent) Update() error {
-//
-//		// use mc.sub here
-//
-//		if err := mc.sub.Update(); err != nil {
+// 	func (m *myComponent) Update() error {
+//		if err := m.child.Update(); err != nil {
 //			return err
 //		}
 //
-//	}
+// 		// use child component's state...
+//
+//		return nil
+// 	}
 //
 type Component interface {
+	// Update updates the component's state.
 	Update() error
 }

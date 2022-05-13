@@ -1,15 +1,13 @@
 package bento
 
 import (
-	"image"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Sprite is an image with state.
+// Sprite is a component that renders to an image.
 type Sprite interface {
 	Component
 
-	// Render renders the sprite to an image, given the screen's size.
-	Render(entity *Entity, size image.Point) *ebiten.Image
+	// Render renders and returns an image, given the size of the canvas the image will be drawn to.
+	Render() *ebiten.Image
 }

@@ -9,8 +9,11 @@ import (
 )
 
 // Scroll allows several pieces of text to be scrolled across an image.
+// point is the bottom-left point of the scroll.
 type Scroll struct {
-	Font *Font
+	Font  *Font
+	Point image.Point
+	Color color.Color
 
 	text  string
 	tpos  int
@@ -20,9 +23,9 @@ type Scroll struct {
 	timer *Timer
 }
 
-// NewScroll creates a new scroll.
+// NewScroll creates a new scroll with the initial text.
 func NewScroll(font *Font, tx string) *Scroll {
-	s := &Scroll{Font: font}
+	s := &Scroll{Font: font, Color: color.White}
 	s.SetSpeed(0.03)
 	s.SetText(tx)
 
@@ -73,17 +76,12 @@ func (s *Scroll) Update() {
 }
 
 // Draw renders the scroll on a new image.
-// point is the bottom-left point of the scroll.
-func (s *Scroll) Draw(
-	clr color.Color,
-	point image.Point,
-	img *ebiten.Image,
-) {
+func (s *Scroll) Draw(img *ebiten.Image) {
 	t := s.text
 
 	if s.tpos < s.tend {
 		t = t[:s.tpos]
 	}
 
-	s.Font.Draw(t, clr, img, point)
+	s.Font.Draw(t, s.Color, img, s.Point)
 }

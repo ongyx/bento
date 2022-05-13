@@ -5,25 +5,24 @@ import (
 )
 
 // Entity is a sprite with rendering state.
-// While a sprite renders to an image, an entity handles drawing the rendered image to the screen.
 // Op is the options used to draw the entity to the screen.
 type Entity struct {
 	Sprite
 	*Transition
-
-	Op *ebiten.DrawImageOptions
+	*ebiten.DrawImageOptions
 }
 
 // NewEntity constructs an entity from a sprite.
-// Entities are hidden by default.
-func NewEntity(sprite Sprite) *Entity {
-	return &Entity{Sprite: sprite, Transition: NewTransition(), Op: &ebiten.DrawImageOptions{}}
+func NewEntity(s Sprite) *Entity {
+	return &Entity{Sprite: s, Transition: NewTransition()}
 }
 
-// Update updates the sprite's state.
+// Update updates the entity's state.
 func (e *Entity) Update() error {
-	if err := e.Sprite.Update(); err != nil {
-		return err
+	if e.Transition.RenderState() != Hidden {
+		if err := e.Sprite.Update(); err != nil {
+			return err
+		}
 	}
 
 	if err := e.Transition.Update(); err != nil {
@@ -33,15 +32,12 @@ func (e *Entity) Update() error {
 	return nil
 }
 
-// Draw draws the sprite's render onto the screen.
-func (e *Entity) Draw(screen *ebiten.Image) {
-	size := screen.Bounds().Size()
-
-	render := e.Sprite.Render(e, size)
-
-	e.Transition.Draw(render)
-
+// Draw draws the entity to an image.
+func (e *Entity) Draw(img *ebiten.Image) {
 	if e.Transition.RenderState() != Hidden {
-		screen.DrawImage(render, e.Op)
+		r := e.Sprite.Render()
+		e.Transition.Draw(r)
+
+		img.DrawImage(r, e.DrawImageOptions)
 	}
 }

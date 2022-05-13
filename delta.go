@@ -61,7 +61,7 @@ func NewDelta(
 	return &Delta{
 		delta: delta,
 		timer: t,
-		index: 0,
+		index: -1,
 		limit: dt,
 		dx:    dx,
 		dy:    dy,
@@ -72,13 +72,12 @@ func NewDelta(
 func (d *Delta) Update() {
 	d.index++
 
-	if d.timer.Done() || d.index >= d.limit {
+	if d.index >= d.limit || d.timer.Done() {
 		d.index = d.limit - 1
 	}
 }
 
 // Delta returns the current delta.
-// This will panic if delta has not been updated yet.
 func (d *Delta) Delta() (x, y float64) {
 	// special case: if x/y delta is 0, return 0 here too
 	// otherwise it will return NaN

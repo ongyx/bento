@@ -6,13 +6,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Transition is a animation drawn over an entity while it is entering or exiting the stage.
+// Transition is an animation drawn over an image.
+// The default render state is always Visible.
 type Transition struct {
 	rs   RenderState
 	anim Animation
 }
 
-// NewTransition creates a new transition.
+// NewTransition creates a new transition that wraps an existing sprite.
 func NewTransition() *Transition {
 	return &Transition{rs: Hidden}
 }
@@ -54,20 +55,6 @@ func (t *Transition) RenderState() RenderState {
 // Update updates the transition's state.
 func (t *Transition) Update() error {
 	if a := t.transition(); a != nil {
-		if err := a.Update(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// Draw draws the transition onto the image.
-func (t *Transition) Draw(image *ebiten.Image) {
-	if a := t.transition(); a != nil {
-		// draw transition over the image.
-		a.Draw(image)
-
 		if a.Done() {
 			// transition finished, change rendering state
 			switch t.rs {
@@ -84,18 +71,35 @@ func (t *Transition) Draw(image *ebiten.Image) {
 
 			t.anim = nil
 		}
+
+		if err := a.Update(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Draw draws the transition over an image.
+func (t *Transition) Draw(img *ebiten.Image) {
+	if t.rs != Hidden {
+		if a := t.transition(); a != nil {
+			a.Draw(img)
+		}
 	}
 }
 
 func (t *Transition) transition() Animation {
-	if t.rs == Entering || t.rs == Exiting {
+	switch t.rs {
+	case Entering, Exiting:
 		// sanity check
 		if t.anim == nil {
 			panic("transition: anim is nil")
 		}
 
 		return t.anim
-	}
 
-	return nil
+	default:
+		return nil
+	}
 }

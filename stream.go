@@ -1,6 +1,6 @@
 package bento
 
-// Stream is a wrapper around a two-way unbuffered channel.
+// Stream is a convinence wrapper around a channel.
 // For example, it can be used to asynchronusly send events:
 //
 //	type event string
@@ -21,31 +21,40 @@ package bento
 // Streams should never be instantiated as a struct literal: it will have a nil channel, which deadlocks any read/writes.
 // Instead use the NewStream function.
 type Stream[T any] struct {
-	ch chan T
+	C chan T
 }
 
-// NewStream creates a stream with values of type T.
-func NewStream[T any]() Stream[T] {
-	return Stream[T]{ch: make(chan T)}
+// NewStream creates a stream of type T.
+// If size is more than 1, the underlying channel will have a buffer of that length.
+func NewStream[T any](size int) Stream[T] {
+	var ch chan T
+
+	if size <= 1 {
+		ch = make(chan T)
+	} else {
+		ch = make(chan T, size)
+	}
+
+	return Stream[T]{C: ch}
 }
 
-// Read returns the next value from the stream.
+// Read blocks the current goroutine until a value can be read.
 // If the stream is closed, nil is returned.
 func (s *Stream[T]) Read() *T {
-	if v, ok := <-s.ch; ok {
+	if v, ok := <-s.C; ok {
 		return &v
 	} else {
 		return nil
 	}
 }
 
-// Poll returns the next value from the stream without blocking.
-// If the stream is closed or there are no values in the stream, nil is returned.
+// Poll reads a value without blocking.
+// If the stream is closed or empty, nil is returned.
 func (s *Stream[T]) Poll() *T {
 	var value *T
 
 	select {
-	case v, ok := <-s.ch:
+	case v, ok := <-s.C:
 		if ok {
 			value = &v
 		}
@@ -56,13 +65,13 @@ func (s *Stream[T]) Poll() *T {
 	return value
 }
 
-// Write puts the value into the stream.
+// Write blocks the current goroutine until the value can be written.
 func (s *Stream[T]) Write(value T) {
-	s.ch <- value
+	s.C <- value
 }
 
 // Close closes the stream's channel.
 // NOTE: You probably should only close the channel from the writer side.
 func (s *Stream[T]) Close() {
-	close(s.ch)
+	close(s.C)
 }

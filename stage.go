@@ -21,56 +21,55 @@ type StageOptions struct {
 
 // Stage is a scene manager which implements the ebiten.Game interface.
 // The current scene must never be nil.
-// If debug is not nil, debug mode is enabled.
 type Stage struct {
 	Op StageOptions
 
-	scene      Scene
-	transition *Transition
+	ts *Transition
 
-	// snapshot holds the last rendered frame of the current scene.
-	// This is used mainly for transitions.
-	snapshot *ebiten.Image
+	sc Scene
+	cs []Compositor
 }
 
 // NewStage creates a stage with an inital scene.
-// NOTE: The initial scene's enter animation is rendered!
-func NewStage(initial Scene) *Stage {
-	s := &Stage{transition: NewTransition()}
-	s.Change(initial)
+func NewStage(inital Scene) *Stage {
+	s := &Stage{ts: NewTransition()}
+	s.Change(inital)
 
 	return s
 }
 
 // Change changes the scene to render in the next frame.
-func (s *Stage) Change(newScene Scene) {
-	oldScene := s.scene
+func (s *Stage) Change(scene Scene) {
+	log.Printf("(%p) changing scene to %p\n", s.sc, scene)
 
-	log.Printf("(%p) changing scene to %p\n", oldScene, newScene)
-
-	if oldScene != nil {
-		s.transition.Hide(oldScene.Exit())
+	if s.sc != nil {
+		s.ts.Hide(s.sc.Exit())
 	}
 
-	s.scene = newScene
+	s.sc = scene
+	s.cs = scene.Compositors()
+
+	go scene.Script(s)
 }
 
 // Update updates the current scene's state.
 func (s *Stage) Update() error {
-	if s.transition.RenderState() != Exiting {
-		if err := s.scene.Update(s); err != nil {
+	Clock.increment()
+
+	for _, c := range s.cs {
+		if err := c.Update(); err != nil {
 			return err
 		}
 	}
 
-	if s.transition.RenderState() == Hidden {
-		// finished old scene's exit transition
-		// render the enter transition of the new scene
-		s.transition.Show(s.scene.Enter())
+	if err := s.ts.Update(); err != nil {
+		return err
 	}
 
-	if err := s.transition.Update(); err != nil {
-		return err
+	// Render the scene's enter transition if it hasn't entered yet
+	// (or the previous scene exited).
+	if s.ts.RenderState() == Hidden {
+		s.ts.Show(s.sc.Enter())
 	}
 
 	return nil
@@ -78,20 +77,11 @@ func (s *Stage) Update() error {
 
 // Draw renders the current scene to the screen.
 func (s *Stage) Draw(screen *ebiten.Image) {
-	if s.snapshot == nil {
-		s.snapshot = ebiten.NewImage(screen.Size())
+	for _, c := range s.cs {
+		c.Draw(screen)
 	}
 
-	// render the scene only if we aren't exiting
-	if s.transition.RenderState() != Exiting {
-		//log.Printf("(%p) drawing to snapshot with %v state\n", s.scene, s.transition.RenderState())
-		s.snapshot.Clear()
-		s.scene.Draw(s.snapshot)
-	}
-
-	screen.DrawImage(s.snapshot, nil)
-
-	s.transition.Draw(screen)
+	s.ts.Draw(screen)
 
 	if s.Op.Font != nil {
 		// draw tps/fps at the top left of the screen
@@ -103,9 +93,6 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 			Default,
 		)
 	}
-
-	// update tick
-	Clock.increment()
 }
 
 // Layout returns the screen's size.
