@@ -13,10 +13,10 @@ const (
 // Timer is a tick-based scheduler for operations.
 // One tick is equivalent to a single frame, where 1 second is 60 frames.
 type Timer struct {
-	delta int
+	delta uint64
 	once  bool
 
-	base  int
+	base  uint64
 	count int
 }
 
@@ -30,12 +30,12 @@ func NewTimer(n float64, once bool) *Timer {
 	if d := SecondToTick(n); d == 0 {
 		panic(fmt.Sprintf("timer: duration of n too small (%f)", n))
 	} else {
-		return &Timer{delta: d, once: once, base: Clock.Now()}
+		return &Timer{delta: uint64(d), once: once, base: Clock.Now()}
 	}
 }
 
 // Delta returns the number of ticks between each trigger.
-func (t *Timer) Delta() int {
+func (t *Timer) Delta() uint64 {
 	return t.delta
 }
 

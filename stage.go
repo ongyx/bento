@@ -24,18 +24,23 @@ type StageOptions struct {
 type Stage struct {
 	Op StageOptions
 
-	ts *Transition
+	ts   *Transition
+	sc   Scene
+	objs []Object
 
-	sc Scene
-	cs []Compositor
+	fn Stream[func()]
 }
 
 // NewStage creates a stage with an inital scene.
 func NewStage(inital Scene) *Stage {
-	s := &Stage{ts: NewTransition()}
+	s := &Stage{ts: NewTransition(), fn: NewStream[func()](0)}
 	s.Change(inital)
 
 	return s
+}
+
+func (s *Stage) OnNextFrame(fn func()) {
+	s.fn.Write(fn)
 }
 
 // Change changes the scene to render in the next frame.
@@ -47,7 +52,7 @@ func (s *Stage) Change(scene Scene) {
 	}
 
 	s.sc = scene
-	s.cs = scene.Compositors()
+	s.objs = scene.Objects()
 
 	go scene.Script(s)
 }
@@ -56,8 +61,8 @@ func (s *Stage) Change(scene Scene) {
 func (s *Stage) Update() error {
 	Clock.increment()
 
-	for _, c := range s.cs {
-		if err := c.Update(); err != nil {
+	for _, o := range s.objs {
+		if err := o.Update(); err != nil {
 			return err
 		}
 	}
@@ -72,13 +77,17 @@ func (s *Stage) Update() error {
 		s.ts.Show(s.sc.Enter())
 	}
 
+	if fn := s.fn.Poll(); fn != nil {
+		(*fn)()
+	}
+
 	return nil
 }
 
 // Draw renders the current scene to the screen.
 func (s *Stage) Draw(screen *ebiten.Image) {
-	for _, c := range s.cs {
-		c.Draw(screen)
+	for _, o := range s.objs {
+		o.Draw(screen)
 	}
 
 	s.ts.Draw(screen)

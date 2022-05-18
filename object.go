@@ -4,8 +4,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Compositor is a component that draws directly to a screen.
-type Compositor interface {
+// Object is a component that draws directly to a screen.
+type Object interface {
 	Component
 
 	// Draw directly draws images onto the given canvas.

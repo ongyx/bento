@@ -55,6 +55,10 @@ func (t *Transition) RenderState() RenderState {
 // Update updates the transition's state.
 func (t *Transition) Update() error {
 	if a := t.transition(); a != nil {
+		if err := a.Update(); err != nil {
+			return err
+		}
+
 		if a.Done() {
 			// transition finished, change rendering state
 			switch t.rs {
@@ -70,10 +74,6 @@ func (t *Transition) Update() error {
 			}
 
 			t.anim = nil
-		}
-
-		if err := a.Update(); err != nil {
-			return err
 		}
 	}
 

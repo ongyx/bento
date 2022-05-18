@@ -1,5 +1,7 @@
 package bento
 
+import "sync/atomic"
+
 var (
 	// Clock is a monotonically increasing tick counter that can be used to schedule operarations (see the Timer type).
 	// There is only one instance per game, and tick updates are handled by the stage.
@@ -8,14 +10,14 @@ var (
 )
 
 type clock struct {
-	tick int
+	tick uint64
 }
 
 // Now returns the current tick.
-func (c *clock) Now() int {
+func (c *clock) Now() uint64 {
 	return c.tick
 }
 
 func (c *clock) increment() {
-	c.tick++
+	atomic.AddUint64(&c.tick, 1)
 }

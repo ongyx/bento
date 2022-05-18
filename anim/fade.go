@@ -36,9 +36,7 @@ func NewFade(in bool, clr color.Color, duration float64) *Fade {
 }
 
 func (f *Fade) Update() error {
-	if err := f.delta.Update(); err != nil {
-		return err
-	}
+	f.delta.Update()
 
 	a, _ := f.delta.Delta()
 
@@ -51,14 +49,14 @@ func (f *Fade) Update() error {
 	return nil
 }
 
-func (f *Fade) Draw(screen *ebiten.Image) {
+func (f *Fade) Draw(img *ebiten.Image) {
 	if f.overlay == nil {
-		f.overlay = ebiten.NewImage(screen.Size())
+		f.overlay = ebiten.NewImage(img.Size())
 	}
 
 	f.overlay.Fill(f.color)
 
-	screen.DrawImage(f.overlay, nil)
+	img.DrawImage(f.overlay, nil)
 }
 
 func (f *Fade) Done() bool {

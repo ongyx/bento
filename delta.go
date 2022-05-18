@@ -62,19 +62,21 @@ func NewDelta(
 		delta: delta,
 		timer: t,
 		index: -1,
-		limit: dt,
+		limit: int(dt),
 		dx:    dx,
 		dy:    dy,
 	}
 }
 
 // Update updates the delta.
-func (d *Delta) Update() {
+func (d *Delta) Update() error {
 	d.index++
 
 	if d.index >= d.limit || d.timer.Done() {
 		d.index = d.limit - 1
 	}
+
+	return nil
 }
 
 // Delta returns the current delta.

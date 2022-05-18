@@ -5,7 +5,8 @@ package bento
 //
 //	type event string
 //
-// 	s := NewStream[event]()
+//	// to use an existing channel, Stream{C: <channel>} can be used instead.
+// 	s := NewStream[event](0)
 //
 //	// this closure acts as a generator
 //	// s.Write behaves like 'yield': it blocks until another goroutine reads from the stream.
@@ -18,14 +19,13 @@ package bento
 // 		fmt.Printf("event: %s", *e)
 // 	}
 //
-// Streams should never be instantiated as a struct literal: it will have a nil channel, which deadlocks any read/writes.
-// Instead use the NewStream function.
 type Stream[T any] struct {
 	C chan T
 }
 
 // NewStream creates a stream of type T.
 // If size is more than 1, the underlying channel will have a buffer of that length.
+// Otherwise, the channel is unbuffered.
 func NewStream[T any](size int) Stream[T] {
 	var ch chan T
 
