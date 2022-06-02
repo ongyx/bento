@@ -6,16 +6,30 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+const (
+	// Hidden indicates the transition has exited or not yet entered.
+	Hidden TransitionState = iota
+	// Visible indicates the transition has entered.
+	Visible
+	// Entering indicates the transition is entering.
+	Entering
+	// Exiting indicates the transition is exiting.
+	Exiting
+)
+
+// TransitionState represents the rendering state of a transition.
+type TransitionState int
+
 // Transition is an animation drawn over an image.
 // The default render state is always Visible.
 type Transition struct {
-	rs   RenderState
-	anim Animation
+	state TransitionState
+	anim  Animation
 }
 
-// NewTransition creates a new transition that wraps an existing sprite.
+// NewTransition creates a new transition.
 func NewTransition() *Transition {
-	return &Transition{rs: Hidden}
+	return &Transition{}
 }
 
 // Show sets the render state to Visible after rendering an enter animation.
@@ -24,11 +38,11 @@ func (t *Transition) Show(enter Animation) {
 	log.Printf("(%p) entering (anim: %p)\n", t.anim, enter)
 
 	if enter != nil {
-		t.rs = Entering
+		t.state = Entering
 		t.anim = enter
 	} else {
 		// NOTE: this clobbers the existing render state!
-		t.rs = Visible
+		t.state = Visible
 		t.anim = nil
 	}
 }
@@ -39,35 +53,33 @@ func (t *Transition) Hide(exit Animation) {
 	log.Printf("(%p) exiting (anim: %p)\n", t.anim, exit)
 
 	if exit != nil {
-		t.rs = Exiting
+		t.state = Exiting
 		t.anim = exit
 	} else {
-		t.rs = Hidden
+		t.state = Hidden
 		t.anim = nil
 	}
 }
 
-// RenderState returns the rendering state of the transition.
-func (t *Transition) RenderState() RenderState {
-	return t.rs
+// State returns the transition's current state.
+func (t *Transition) State() TransitionState {
+	return t.state
 }
 
-// Update updates the transition's state.
-func (t *Transition) Update() error {
+// Update updates the transition's logical state.
+func (t *Transition) Update() {
 	if a := t.transition(); a != nil {
-		if err := a.Update(); err != nil {
-			return err
-		}
+		a.Update()
 
 		if a.Done() {
 			// transition finished, change rendering state
-			switch t.rs {
+			switch t.state {
 			case Entering:
 				log.Printf("(%p) entered\n", t.anim)
-				t.rs = Visible
+				t.state = Visible
 			case Exiting:
 				log.Printf("(%p) exited\n", t.anim)
-				t.rs = Hidden
+				t.state = Hidden
 			default:
 				// this really shouldn't happen.
 				panic("transition: inconsistent state")
@@ -76,21 +88,17 @@ func (t *Transition) Update() error {
 			t.anim = nil
 		}
 	}
-
-	return nil
 }
 
-// Draw draws the transition over an image.
+// Draw draws the transition to the image.
 func (t *Transition) Draw(img *ebiten.Image) {
-	if t.rs != Hidden {
-		if a := t.transition(); a != nil {
-			a.Draw(img)
-		}
+	if a := t.transition(); a != nil {
+		a.Draw(img)
 	}
 }
 
 func (t *Transition) transition() Animation {
-	switch t.rs {
+	switch t.state {
 	case Entering, Exiting:
 		// sanity check
 		if t.anim == nil {

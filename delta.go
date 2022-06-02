@@ -16,7 +16,7 @@ const (
 // DeltaAlgorithm specifies the algorithm to use when generating deltas.
 type DeltaAlgorithm int
 
-// Delta is a delta that changes over time.
+// Delta is a change in value per time unit.
 type Delta struct {
 	delta image.Point
 	timer *Timer
@@ -69,14 +69,12 @@ func NewDelta(
 }
 
 // Update updates the delta.
-func (d *Delta) Update() error {
+func (d *Delta) Update() {
 	d.index++
 
 	if d.index >= d.limit || d.timer.Done() {
 		d.index = d.limit - 1
 	}
-
-	return nil
 }
 
 // Delta returns the current delta.

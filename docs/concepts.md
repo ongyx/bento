@@ -5,32 +5,27 @@
 The foundation of Bento's model is the component.
 A component encapsulates some state and logic that is updated every tick by calling it's `Update` method, similar to ebiten's `Game.Update`.
 
-Components should update their subcomponents by calling their `Update` method only after updating their own state.
-
-## Sprite
-
-A sprite is a component that can render to an image.
+Components should update their subcomponents by calling their `Update` method before using their state.
 
 ## Entity
 
-An entity contains a sprite to draw to the screen, as well as it's rendering state such as the options used to draw the sprite to the screen.
-Sprites can be wrapped with `NewEntity` to create an entity.
+An entity is a component that draws directly to an image.
 
 ## Animation
 
-An animation is a component that draws on top of a sprite/scene for a finite number of ticks.
+An animation is a entity that draws on top of a sprite/scene for a finite number of ticks.
 
 ## Transition
 
-A transition is an animation that draws over a sprite/scene when it's entering or exiting the stage.
+A transition is an animation that draws over a entity when it's entering or exiting the stage.
 Transitions also control the visibility of a sprite.
 
 ## Scene
 
-A scene is a special kind of entity: it renders other entities to the screen, and optionally draws other non-entity images over them.
+A scene is a special kind of meta-entity: it has a bunch of entities that Bento updates and renders, and entity are scripted in the `Script` method.
 This can be considered analogous to a game level.
 
 ## Stage
 
-A stage draws and changes scenes on screen.
+A stage draws and changes scenes on screen, optionally with transitions.
 It implements the `ebiten.Game` interface, and therefore an instance can be passed directly to `ebiten.RunGame`.

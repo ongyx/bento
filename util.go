@@ -28,12 +28,6 @@ func Unpad(bound image.Rectangle, pad image.Point) image.Rectangle {
 	}
 }
 
-// NewImageBound creates an image from a bound.
-func NewImageBound(bound image.Rectangle) *ebiten.Image {
-	size := bound.Size()
-	return ebiten.NewImage(size.X, size.Y)
-}
-
 // Radian converts an angle in degrees to radians.
 func Radian(degree float64) float64 {
 	return degree * (math.Pi / 180)

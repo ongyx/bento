@@ -35,7 +35,7 @@ func NewFade(in bool, clr color.Color, duration float64) *Fade {
 	}
 }
 
-func (f *Fade) Update() error {
+func (f *Fade) Update() {
 	f.delta.Update()
 
 	a, _ := f.delta.Delta()
@@ -45,8 +45,6 @@ func (f *Fade) Update() error {
 	}
 
 	f.color.A = uint8(a)
-
-	return nil
 }
 
 func (f *Fade) Draw(img *ebiten.Image) {

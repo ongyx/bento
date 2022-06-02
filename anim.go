@@ -1,8 +1,8 @@
 package bento
 
-// Animation is a effect rendered on a scene/sprite.
+// Animation is a effect rendered on another entity.
 type Animation interface {
-	Object
+	Entity
 
 	Done() bool
 }

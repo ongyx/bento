@@ -10,11 +10,11 @@ import (
 )
 
 // StageOptions defines various options for the stage.
-// If Font is not nil, a TPS counter is drawn on the top-left of the screen.
+// If Debug is not nil, a TPS counter is drawn on the top-left of the screen with the font.
 // If Size is not nil, it will be used as the screen (window) size.
 // If HiDPI is true, the screen size is scaled to the device scale factor.
 type StageOptions struct {
-	Font  *Font
+	Debug *Font
 	Size  *image.Point
 	HiDPI bool
 }
@@ -22,25 +22,23 @@ type StageOptions struct {
 // Stage is a scene manager which implements the ebiten.Game interface.
 // The current scene must never be nil.
 type Stage struct {
-	Op StageOptions
+	sc Scene
+	op *StageOptions
 
-	ts   *Transition
-	sc   Scene
-	objs []Object
-
-	fn Stream[func()]
+	ts *Transition
+	es []Entity
 }
 
 // NewStage creates a stage with an inital scene.
-func NewStage(inital Scene) *Stage {
-	s := &Stage{ts: NewTransition(), fn: NewStream[func()](0)}
-	s.Change(inital)
+func NewStage(initial Scene, op *StageOptions) *Stage {
+	if op == nil {
+		op = &StageOptions{}
+	}
+
+	s := &Stage{op: op, ts: NewTransition()}
+	s.Change(initial)
 
 	return s
-}
-
-func (s *Stage) OnNextFrame(fn func()) {
-	s.fn.Write(fn)
 }
 
 // Change changes the scene to render in the next frame.
@@ -52,7 +50,7 @@ func (s *Stage) Change(scene Scene) {
 	}
 
 	s.sc = scene
-	s.objs = scene.Objects()
+	s.es = scene.Entities()
 
 	go scene.Script(s)
 }
@@ -61,24 +59,16 @@ func (s *Stage) Change(scene Scene) {
 func (s *Stage) Update() error {
 	Clock.increment()
 
-	for _, o := range s.objs {
-		if err := o.Update(); err != nil {
-			return err
-		}
+	for _, e := range s.es {
+		e.Update()
 	}
 
-	if err := s.ts.Update(); err != nil {
-		return err
-	}
+	s.ts.Update()
 
 	// Render the scene's enter transition if it hasn't entered yet
 	// (or the previous scene exited).
-	if s.ts.RenderState() == Hidden {
+	if s.ts.State() == Hidden {
 		s.ts.Show(s.sc.Enter())
-	}
-
-	if fn := s.fn.Poll(); fn != nil {
-		(*fn)()
 	}
 
 	return nil
@@ -86,15 +76,15 @@ func (s *Stage) Update() error {
 
 // Draw renders the current scene to the screen.
 func (s *Stage) Draw(screen *ebiten.Image) {
-	for _, o := range s.objs {
-		o.Draw(screen)
+	for _, e := range s.es {
+		e.Draw(screen)
 	}
 
 	s.ts.Draw(screen)
 
-	if s.Op.Font != nil {
+	if s.op.Debug != nil {
 		// draw tps/fps at the top left of the screen
-		s.Op.Font.Write(
+		s.op.Debug.Write(
 			fmt.Sprintf("tps: %0.2f", ebiten.CurrentTPS()),
 			color.White,
 			screen,
@@ -108,15 +98,15 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	var w, h int
 
-	if s.Op.Size != nil {
-		w = s.Op.Size.X
-		h = s.Op.Size.Y
+	if s.op.Size != nil {
+		w = s.op.Size.X
+		h = s.op.Size.Y
 	} else {
 		w = outsideWidth
 		h = outsideHeight
 	}
 
-	if s.Op.HiDPI {
+	if s.op.HiDPI {
 		w = int(DPIScale(w))
 		h = int(DPIScale(h))
 	}

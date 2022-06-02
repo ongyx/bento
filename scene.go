@@ -1,19 +1,14 @@
 package bento
 
-// Scene is a collection of objects scripted with some actions.
+// Scene is a collection of entities scripted with some actions.
 type Scene interface {
-	// Objects returns the objects in the scene.
-	Objects() []Object
+	// Entities returns the entities in the scene.
+	Entities() []Entity
 
-	// Script issues commands to the scene's compositors.
-	// For example, if you have a Scroll:
-	//
-	// 	func (m *myScene) Script(s *Stage) {
-	// 		m.scroll.SetText("Hello World!")
-	// 		// TODO: add channel to wait for events (i.e scroll finish?)
-	// 		s.Change(anotherScene)
-	// 	}
-	//
+	// Script asynchronously sends events to entities,
+	// allowing entity state to be safely mutated without data races.
+	// Entities typically expose a write-only channel to send events on,
+	// then receive and handle events once per game tick in their Update method.
 	Script(s *Stage)
 
 	// Enter returns the enter animation of the scene.

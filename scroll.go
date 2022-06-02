@@ -69,12 +69,10 @@ func (s *Scroll) Size() image.Point {
 }
 
 // Update updates the state of the scroll.
-func (s *Scroll) Update() error {
+func (s *Scroll) Update() {
 	if s.timer.Done() && s.tpos < s.tend {
 		s.tpos++
 	}
-
-	return nil
 }
 
 // Draw renders the scroll on a new image.

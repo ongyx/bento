@@ -1,24 +1,21 @@
 package bento
 
-// Component is a state that updates every tick.
-//
-// If a component uses another component, it should be updated before using its state:
+// Component encapsulates some opaque state that updates every tick.
+// Implementations should call the Update method of sub-components, if any:
 //
 //	type myComponent struct {
 // 		child Component
 // 	}
 //
 // 	func (m *myComponent) Update() error {
-//		if err := m.child.Update(); err != nil {
-//			return err
-//		}
+//		m.child.Update()
 //
 // 		// use child component's state...
 //
 //		return nil
 // 	}
 //
+// Trying to access sub-component state before the first call to Update is undefined behaviour.
 type Component interface {
-	// Update updates the component's state.
-	Update() error
+	Update()
 }

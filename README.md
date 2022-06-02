@@ -1,15 +1,18 @@
 # Bento
 
-A game engine based on [Ebiten].
+A framework for 2D games built on [Ebitengine] (née Ebiten).
 
-**DISCLAIMER**: Bento is experimental, and it is under development. Its API is subject to breaking changes.
+**DISCLAIMER**: Bento is experimental, and it is under development. The API is subject to breaking changes.
 
 ## Rationale
 
-Ebiten is a great game engine, but understandably does not have a higher-level API akin to Unity to keep things simple.
+Ebiten is a great game engine, and it is a solid foundation for making cross-platform games.
+However, complex games would benefit from a higher-level framework to simplify some common tasks.
 
 This is where Bento attempts to fill the gap: it provides a rendering model with objects such as entities and scenes.
-However, you can (and should) use Ebiten directly for finer-grained control over graphics if needed.
+
+Keep in mind that Bento is meant to complement, not replace Ebiten. 
+You can (and should) use Ebiten directly for finer-grained control over graphics if needed.
 
 ## Getting Started
 
@@ -18,6 +21,8 @@ The [API] documentation is a good place to start.
 Some documents that you might want to read:
 
 - [`concepts`](docs/concepts.md): Core concepts that Bento is built upon.
+
+For some examples, check out the [`examples`](examples/) folder.
 
 ## Install
 
@@ -31,6 +36,6 @@ Hajime Hoshi for creating Ebiten.
 
 Bento is licensed under the MIT License.
 
-[Ebiten]: https://github.com/hajimehoshi/ebiten
+[Ebitengine]: https://github.com/hajimehoshi/ebiten
 [reference]: docs/README.md
 [API]: https://pkg.go.dev/github.com/ongyx/bento
