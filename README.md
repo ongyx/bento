@@ -1,6 +1,6 @@
-# Bento
+# Bento 🍱
 
-A game framework for [Ebitengine].
+**A game framework for [Ebitengine]**
 
 **DISCLAIMER**: Bento is still in the early stages of development! The API is subject to breaking changes.
 
