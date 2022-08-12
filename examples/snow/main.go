@@ -12,7 +12,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/ongyx/onigiri/ecs"
+	"github.com/ongyx/bento/ecs"
 )
 
 const (
