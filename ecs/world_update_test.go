@@ -9,7 +9,10 @@ func TestWorldUpdate(t *testing.T) {
 	w := UpdateScene()
 
 	for i := 0; i < 5; i++ {
-		w.Update()
+		// should not happen
+		if err := w.Update(); err != nil {
+			t.Error(err)
+		}
 	}
 }
 

@@ -14,6 +14,7 @@ func (c *clock) Now() uint64 {
 	return c.tick
 }
 
-func (c *clock) increment() {
+// Tick increments the clock's ticks.
+func (c *clock) Tick() {
 	atomic.AddUint64(&c.tick, 1)
 }
