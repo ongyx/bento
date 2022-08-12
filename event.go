@@ -1,32 +1,41 @@
 package bento
 
-// event: provides utility functions for using channels as events/notifiers.
+// Event is a notification channel of T.
+type Event[T any] struct {
+	c chan T
+}
 
-import "sync"
+// NewEvent creates a new event with a buffer of (size) values.
+func NewEvent[T any](size int) *Event[T] {
+	return &Event[T]{c: make(chan T, size)}
+}
 
-// Poll attempts to receive a value from the event without blocking the current goroutine.
-// If the event is closed or empty, nil is returned.
-func Poll[T any](ch <-chan T) *T {
-	var cv *T
+// Notify runs the callback function when a value is emitted.
+func (e *Event[T]) Notify(f func(T)) {
+	go func() {
+		f(<-e.c)
+	}()
+}
 
+// Emit sends the value to the event channel.
+func (e *Event[T]) Emit(value T) {
+	e.c <- value
+}
+
+// Poll checks if a value was emitted without blocking the current goroutine.
+// If there is none, ok will be false.
+func (e *Event[T]) Poll() (value T, ok bool) {
 	select {
-	case v, ok := <-ch:
-		if ok {
-			cv = &v
-		}
-	// don't block if there are no values
+	case value = <-e.c:
+		ok = true
 	default:
 	}
 
-	return cv
+	return
 }
 
-// Send asynchronously sends a value to the channel,
-// notifying the waitgroup once the value has been sent.
-func Send[T any](ch chan<- T, v T, wg *sync.WaitGroup) {
-	wg.Add(1)
-	go func() {
-		ch <- v
-		wg.Done()
-	}()
+// Close closes the event channel.
+// No event methods should be called after this.
+func (e *Event[T]) Close() {
+	close(e.c)
 }

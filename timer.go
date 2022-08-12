@@ -2,12 +2,6 @@ package bento
 
 import (
 	"fmt"
-
-	"github.com/hajimehoshi/ebiten/v2"
-)
-
-const (
-	tps = ebiten.DefaultTPS
 )
 
 // Timer is a tick-based scheduler for operations.

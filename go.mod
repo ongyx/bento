@@ -1,20 +1,20 @@
-module github.com/ongyx/bento
+module github.com/ongyx/onigiri
 
 go 1.18
 
 require (
-	github.com/hajimehoshi/ebiten/v2 v2.3.3
-	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd
+	github.com/hajimehoshi/ebiten/v2 v2.3.7
+	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
 	gonum.org/v1/gonum v0.11.0
 )
 
 require (
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220516021902-eb3e265c7661 // indirect
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220806181222-55e207c401ad // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/jezek/xgb v1.0.1 // indirect
-	golang.org/x/exp/shiny v0.0.0-20220518171630-0b5c67f07fdf // indirect
-	golang.org/x/mobile v0.0.0-20220518205345-8578da9835fd // indirect
-	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	golang.org/x/exp/shiny v0.0.0-20220722155223-a9213eeb770e // indirect
+	golang.org/x/mobile v0.0.0-20220722155234-aaac322e2105 // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664 // indirect
 	golang.org/x/text v0.3.7 // indirect
 )

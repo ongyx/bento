@@ -7,6 +7,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+const (
+	tps = ebiten.DefaultTPS
+)
+
 // Bound calculates a bound, given its top-left point and its size.
 func Bound(point, size image.Point) image.Rectangle {
 	return image.Rectangle{Min: point, Max: point.Add(size)}
