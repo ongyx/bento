@@ -13,7 +13,9 @@ func NewEvent[T any](size int) *Event[T] {
 // Notify runs the callback function when a value is emitted.
 func (e *Event[T]) Notify(f func(T)) {
 	go func() {
-		f(<-e.c)
+		for v := range e.c {
+			f(v)
+		}
 	}()
 }
 

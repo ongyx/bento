@@ -5,6 +5,8 @@ import (
 	"sync/atomic"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
+	"github.com/ongyx/bento"
 )
 
 const maxTables = 64
@@ -16,6 +18,8 @@ type entry struct {
 
 // World is the container of all data related to entities, components and systems.
 type World struct {
+	Spawned, Despawned *bento.Signal[Entity]
+
 	tables  map[reflect.Type]entry
 	tableID uint8
 
@@ -31,6 +35,9 @@ type World struct {
 // NewWorld creates a new world with an inital capacity of (size) entities.
 func NewWorld(size int) *World {
 	return &World{
+		Spawned:   bento.NewSignal[Entity](10),
+		Despawned: bento.NewSignal[Entity](10),
+
 		tables:   make(map[reflect.Type]entry, maxTables),
 		entities: make(map[Entity]*Signature, size),
 	}
@@ -45,6 +52,8 @@ func (w *World) Spawn() Entity {
 	var s Signature
 	w.entities[e] = &s
 
+	w.Spawned.Emit(e)
+
 	return e
 }
 
@@ -55,6 +64,8 @@ func (w *World) Despawn(e Entity) {
 	}
 
 	delete(w.entities, e)
+
+	w.Despawned.Emit(e)
 }
 
 // Register adds the systems to the world.
