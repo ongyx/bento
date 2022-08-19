@@ -7,7 +7,7 @@ type ComponentKind interface {
 	kind() uint8
 }
 
-// Component is a unique identifer for a component type.
+// Component represents a component type T in a world.
 type Component[T any] struct {
 	world *World
 	table *Table[T]

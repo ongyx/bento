@@ -1,13 +1,13 @@
 package bento
 
-// Signal is a broadcaster that notifies several slots (callbacks) when a value is emitted.
+// Signal is a event broadcaster that notifies several slots (callbacks) when a value is emitted.
 //
-//	s := NewSignal[string](0)
+//	s := NewSignal(0)
 //	s.Connect(func(s string) {
 //		fmt.Println(s)
 //	})
 //
-//	s.Emit("Hello World!")
+//	e.Emit("Hello World!")
 //
 // Emitting a signal is concurrent-safe.
 type Signal[T any] struct {
@@ -15,6 +15,7 @@ type Signal[T any] struct {
 	slots []func(T)
 }
 
+// NewSignal creates a new signal with a buffer of (size) values.
 func NewSignal[T any](size int) *Signal[T] {
 	s := &Signal[T]{event: NewEvent[T](size)}
 	s.event.Notify(s.onNotify)
@@ -27,9 +28,14 @@ func (s *Signal[T]) Connect(slot func(T)) {
 	s.slots = append(s.slots, slot)
 }
 
-// Emit notifies all connected slots.
+// Emit emits the value through the signal.
 func (s *Signal[T]) Emit(value T) {
 	s.event.Emit(value)
+}
+
+// Close shut downs the signal.
+func (s *Signal[T]) Close() {
+	s.event.Close()
 }
 
 func (s *Signal[T]) onNotify(value T) {

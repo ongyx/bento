@@ -92,8 +92,10 @@ func (w *World) Update() error {
 		}
 	}
 
-	// all systems initalised by this point
-	w.init = true
+	if !w.init {
+		// all systems initalised by this point
+		w.init = true
+	}
 
 	return nil
 }
