@@ -1,7 +1,6 @@
 package ecs
 
 import (
-	"reflect"
 	"sync/atomic"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -20,7 +19,7 @@ type entry struct {
 type World struct {
 	Spawned, Despawned *bento.Signal[Entity]
 
-	tables  map[reflect.Type]entry
+	tables  map[TypeID]entry
 	tableID uint8
 
 	entities map[Entity]*Signature
@@ -38,7 +37,7 @@ func NewWorld(size int) *World {
 		Spawned:   bento.NewSignal[Entity](10),
 		Despawned: bento.NewSignal[Entity](10),
 
-		tables:   make(map[reflect.Type]entry, maxTables),
+		tables:   make(map[TypeID]entry, maxTables),
 		entities: make(map[Entity]*Signature, size),
 	}
 }

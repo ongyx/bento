@@ -20,20 +20,32 @@ func NewTable[T any](size int) *Table[T] {
 }
 
 // Get returns a reference to the component indexed by the entity.
-// If the entity is not in the table, nil is returned.
+// This panics if the entity is not in the table.
 func (t *Table[T]) Get(e Entity) *T {
-	if idx, ok := t.entities[e]; ok {
-		return &t.components[idx]
-	} else {
-		return nil
-	}
+	return &t.components[t.entities[e]]
 }
 
-// Set inserts a entity-component pair.
+// Set inserts an entity-component pair into the table.
 func (t *Table[T]) Set(e Entity, c T) {
-	// length is always last index + 1
-	t.entities[e] = len(t.components)
-	t.components = append(t.components, c)
+	*t.Insert(e) = c
+}
+
+// Insert inserts the entity if it does not exist, and returns a reference to the component.
+// The value of the component is guaranteed to be the zero value of T.
+func (t *Table[T]) Insert(e Entity) *T {
+	idx, ok := t.entities[e]
+
+	if !ok {
+		var zv T
+
+		// after appending, the old length is now the last index.
+		idx = len(t.components)
+
+		t.entities[e] = idx
+		t.components = append(t.components, zv)
+	}
+
+	return &t.components[idx]
 }
 
 // Delete removes the component by entity, swapping the index of the last element in place.

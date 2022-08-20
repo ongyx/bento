@@ -1,16 +1,16 @@
 package ecs
 
-// View is a cached query that can be used by systems to search for entities with specific components.
+// View is a cached filter that can be used by systems to search for entities with specific components.
 type View struct {
 	world *World
 	sig   Signature
 }
 
-// NewView creates a new view with the signatures of the components.
-func NewView(w *World, components ...ComponentKind) *View {
+// NewView creates a new view with the component types.
+func NewView(w *World, types ...TypeID) *View {
 	v := &View{world: w}
-	for _, c := range components {
-		v.sig.Set(c.kind())
+	for _, t := range types {
+		v.sig.Set(w.tables[t].id)
 	}
 	return v
 }

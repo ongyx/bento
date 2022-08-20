@@ -23,9 +23,7 @@ type PrintSystem struct {
 }
 
 func (ps *PrintSystem) Init(w *World) {
-	text := Query[Text](w)
-
-	ps.view = NewView(w, text)
+	ps.view = NewView(w, Type[Text]())
 }
 
 func (ps *PrintSystem) Update(w *World) error {

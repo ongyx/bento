@@ -18,7 +18,7 @@ type PrintSystem struct {
 // Initialization of views and any other state is done here.
 func (p *PrintSystem) Init(w *ecs.World) {
   // We create a view that searches for entities with the Text component.
-  p.view = ecs.NewView(w, ecs.Query[Text](w))
+  p.view = ecs.NewView(w, ecs.Type[Text]())
 }
 
 // Update is called once per logical tick, approximately 60 times per second.

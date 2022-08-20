@@ -13,7 +13,7 @@ type MovementSystem struct {
 }
 
 func (m *MovementSystem) Init(w *ecs.World) {
-	m.view = ecs.NewView(w, ecs.Query[Position](w), ecs.Query[Velocity](w), ecs.Query[Transform](w))
+	m.view = ecs.NewView(w, ecs.Type[Position](), ecs.Type[Velocity](), ecs.Type[Transform]())
 }
 
 func (m *MovementSystem) Update(w *ecs.World) error {
@@ -49,7 +49,7 @@ type RenderSystem struct {
 }
 
 func (r *RenderSystem) Init(w *ecs.World) {
-	r.view = ecs.NewView(w, ecs.Query[Position](w), ecs.Query[Transform](w), ecs.Query[Sprite](w))
+	r.view = ecs.NewView(w, ecs.Type[Position](), ecs.Type[Transform](), ecs.Type[Sprite]())
 }
 
 func (r *RenderSystem) Update(w *ecs.World) error {
