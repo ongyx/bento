@@ -15,16 +15,46 @@ The minimum Go version is `1.18` for versions of Bento past v0.5.0.
 
 Bento version v0.5.0 was rewritten from scratch to take advantage of newer Go features such as generics.
 
-## Installation
+## Getting Started
+
+### Installation
 
 `go get github.com/ongyx/bento` should be sufficient to add it as a go.mod dependency.
 
-## Getting Started
+### Documentation
 
 The [API] documentation is a good place to start.
 
 General tutorials/how-tos can be found in the [`docs`](docs/) directory.
 You may want to take a look at the [`examples`](examples/) too.
+
+### Build Tags
+
+Bento can be configured by specifying build tags when compiling or testing.
+
+Currently, the following tags are part of the public API:
+
+* `discretegpu`: Prefer using the discrete GPU on Windows.
+  This requires CGo which is enabled by default on native builds, but some setup is needed for [cross compiling](#cross-compiling).
+
+### Cross Compiling
+
+To cross compile pure Go code, it's generally as easy as setting `GOOS` and `GOARCH` to your target platform, such as `windows/amd64`.
+However, features using CGo require some setup to work properly.
+
+First, find and install the appropriate cross compiler for your target platform. For Linux -> Windows, this is usually MinGW.
+(Consult your package manager for this.)
+
+Next, export the `GOOS`/`GOARCH` from earlier, `CGO_ENABLED=1`, and `CC` to the cross compiler:
+
+```bash
+$ # this is for windows/amd64, change the variables accordingly for your platform
+$ export GOOS=windows
+$ export GOARCH=amd64
+$ export CGO_ENABLED=1
+$ export CC=x86_64-w64-mingw32-gcc
+$ go build
+```
 
 ## Credits
 
