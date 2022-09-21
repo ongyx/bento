@@ -37,13 +37,13 @@ func RenderScene() *ecs.World {
 	for i := 0; i < spriteNum; i++ {
 		e := w.Spawn()
 
-		pos.Set(e, Position{rand.Intn(screenSize), rand.Intn(screenSize)})
+		pos.Insert(e, Position{rand.Intn(screenSize), rand.Intn(screenSize)})
 
-		vlc.Set(e, Velocity{rand.Intn(maxDistance) + 1, rand.Intn(maxDistance) + 1})
+		vlc.Insert(e, Velocity{rand.Intn(maxDistance) + 1, rand.Intn(maxDistance) + 1})
 
-		tf.Set(e, Transform{rand.Intn(360)})
+		tf.Insert(e, Transform{rand.Intn(360)})
 
-		sprite.Set(e, img)
+		sprite.Insert(e, img)
 	}
 
 	w.Register(&MovementSystem{}, &RenderSystem{})

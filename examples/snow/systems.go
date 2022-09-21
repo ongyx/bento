@@ -55,7 +55,7 @@ func (r *RenderSystem) Init(w *ecs.World) {
 func (r *RenderSystem) Update(w *ecs.World) error {
 	r.frame++
 	if (r.frame % logInterval) == 0 {
-		fmt.Printf("tps: %f, fps: %f\n", ebiten.CurrentTPS(), ebiten.CurrentFPS())
+		fmt.Printf("tps: %f, fps: %f\n", ebiten.ActualTPS(), ebiten.ActualFPS())
 	}
 
 	return nil

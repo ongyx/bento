@@ -62,3 +62,15 @@ func SecondToTick(seconds float64) int {
 func TickToSecond(ticks int) float64 {
 	return float64(ticks) / tps
 }
+
+// Poll attempts to read a value from the channel without blocking.
+// If the channel is empty, ok is false.
+func Poll[T any](ch <-chan T) (value T, ok bool) {
+	select {
+	case value = <-ch:
+		ok = true
+	default:
+	}
+
+	return
+}

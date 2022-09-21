@@ -1,43 +1,40 @@
 package bento
 
-// Event is a notification channel of T.
+// Event notifies one or more callbacks when a event value is sent over the channel.
+//
+//	ch := make(chan string)
+//
+//	e := NewEvent(ch)
+//
+//	e.Notify(func(s string) {
+//		fmt.Println(s)
+//	})
+//
+//	e.Listen()
+//
+//	ch <- "Hello World!"
 type Event[T any] struct {
-	c chan T
+	ch  <-chan T
+	fns []func(T)
 }
 
-// NewEvent creates a new event with a buffer of (size) values.
-func NewEvent[T any](size int) *Event[T] {
-	return &Event[T]{c: make(chan T, size)}
+// NewEvent creates a new event backed by the read-only channel ch.
+func NewEvent[T any](ch <-chan T) *Event[T] {
+	e := &Event[T]{ch: ch}
+	go e.listen()
+
+	return e
 }
 
-// Notify runs the callback function when a value is emitted.
-func (e *Event[T]) Notify(f func(T)) {
-	go func() {
-		for v := range e.c {
-			f(v)
+// Notify registers the callback to the event.
+func (e *Event[T]) Notify(fn func(T)) {
+	e.fns = append(e.fns, fn)
+}
+
+func (e *Event[T]) listen() {
+	for v := range e.ch {
+		for _, fn := range e.fns {
+			fn(v)
 		}
-	}()
-}
-
-// Emit sends the value to the event channel.
-func (e *Event[T]) Emit(value T) {
-	e.c <- value
-}
-
-// Poll checks if a value was emitted without blocking the current goroutine.
-// If there is none, ok will be false.
-func (e *Event[T]) Poll() (value T, ok bool) {
-	select {
-	case value = <-e.c:
-		ok = true
-	default:
 	}
-
-	return
-}
-
-// Close closes the event channel.
-// No event methods should be called after this.
-func (e *Event[T]) Close() {
-	close(e.c)
 }

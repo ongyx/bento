@@ -1,29 +1,18 @@
 package ecs
 
-import (
-	"sync/atomic"
+import "github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/hajimehoshi/ebiten/v2"
+const maxPools = 64
 
-	"github.com/ongyx/bento"
-)
-
-const maxTables = 64
-
-type entry struct {
-	table
-	id uint8
-}
-
-// World is the container of all data related to entities, components and systems.
+// World contains all data related to entities, components and systemw.
 type World struct {
-	Spawned, Despawned *bento.Signal[Entity]
+	pools  []pool
+	poolID map[TypeID]uint8
 
-	tables  map[TypeID]entry
-	tableID uint8
-
-	entities map[Entity]*Signature
-	entityID uint64
+	entities []entity
+	// deleted is the index of the most recently deleted entity.
+	// if there are no deleted entities, it is set to invalid.
+	deleted uint32
 
 	systems   []System
 	renderers []Renderer
@@ -31,40 +20,61 @@ type World struct {
 	init bool
 }
 
-// NewWorld creates a new world with an inital capacity of (size) entities.
+// NewWorld creates a new world with (size) capacity for entitiew.
 func NewWorld(size int) *World {
 	return &World{
-		Spawned:   bento.NewSignal[Entity](10),
-		Despawned: bento.NewSignal[Entity](10),
+		pools:  make([]pool, 0, maxPools),
+		poolID: make(map[TypeID]uint8, maxPools),
 
-		tables:   make(map[TypeID]entry, maxTables),
-		entities: make(map[Entity]*Signature, size),
+		entities: make([]entity, 0, size),
+		deleted:  invalid,
 	}
 }
 
-// Spawn creates a new entity and adds it to the world.
-// Entity IDs are guaranteed to be unique to seperate worlds, and not collide with any despawned entities.
+// Spawn creates a new entity in the world.
 func (w *World) Spawn() Entity {
-	// TODO(ongyx): recycle despawned entities?
-	e := Entity{id: atomic.AddUint64(&w.entityID, 1)}
+	var e Entity
 
-	var s Signature
-	w.entities[e] = &s
+	if w.deleted != invalid {
+		// if there is a recently deleted entity, recycle it
+		e = w.respawn(w.deleted)
+	} else {
+		id := uint32(len(w.entities))
+		if id == invalid {
+			panic("world: too many entities")
+		}
 
-	w.Spawned.Emit(e)
+		e = Entity{id: id}
+
+		// append new entity
+		w.entities = append(w.entities, entity{entity: e})
+	}
 
 	return e
 }
 
-// Despawn destroys the entity, removing it from the world.
+// Despawn removes the entity from the world.
 func (w *World) Despawn(e Entity) {
-	for _, t := range w.tables {
-		t.Delete(e)
+	// bump the entity version
+	entity := &w.entities[e.id].entity
+	entity.version++
+
+	id := entity.id
+
+	// make the entity ID a pointer to the previous deleted entity, if any
+	if w.deleted != invalid {
+		entity.id = w.deleted
+	} else {
+		entity.id = invalid
 	}
 
-	delete(w.entities, e)
+	// this is now the most recently deleted entity
+	w.deleted = id
 
-	w.Despawned.Emit(e)
+	// remove entity from all pools
+	for _, p := range w.pools {
+		p.Delete(e)
+	}
 }
 
 // Register adds the systems to the world.
@@ -105,4 +115,28 @@ func (w *World) Draw(screen *ebiten.Image) {
 	for _, r := range w.renderers {
 		r.Render(w, screen)
 	}
+}
+
+// respawn resurrects a previously deleted entity.
+func (w *World) respawn(id uint32) Entity {
+	e := &w.entities[id].entity
+
+	// if entity ID is invalid, this is the end of the linked list
+	// otherwise, destroyed is set to the next deleted entity.
+	if e.id == invalid {
+		w.deleted = invalid
+	} else {
+		w.deleted = e.id
+	}
+
+	// entity ID is restored so it can now be reused.
+	e.id = id
+
+	return *e
+}
+
+// entity is an entry for a entity in a world.
+type entity struct {
+	entity Entity
+	sig    Signature
 }

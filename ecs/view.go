@@ -1,41 +1,50 @@
 package ecs
 
+import "github.com/ongyx/bento/ecs/sparse"
+
+const viewSize = 10
+
 // View is a cached filter that can be used by systems to search for entities with specific components.
 type View struct {
-	world *World
-	sig   Signature
+	sig      *Signature
+	world    *World
+	entities *sparse.Set[Entity]
 }
 
-// NewView creates a new view with the component types.
-func NewView(w *World, types ...TypeID) *View {
-	v := &View{world: w}
+// NewView creates a new view with component types to match the entities against.
+func NewView(world *World, types ...TypeID) *View {
+	sig := new(Signature)
+
 	for _, t := range types {
-		v.sig.Set(w.tables[t].id)
+		sig.Set(world.poolID[t])
 	}
+
+	v := &View{sig, world, sparse.NewSet[Entity](viewSize)}
+	v.Cache()
+
 	return v
 }
 
-// Each calls the function for each entity that matches the view's signature.
-// Entities are not guaranteed to be in order; if you want to sort them before iteration use Filter.
-func (v *View) Each(f func(e Entity)) {
-	for e, sig := range v.world.entities {
-		if sig.Contains(v.sig) {
-			f(e)
+// Cache searches for entities which matches the view's filter.
+func (v *View) Cache() {
+	for _, e := range v.world.entities {
+		// the entity must have the view's signature
+		// (and therefore the components of interest),
+		// not the other way round.
+		if e.sig.Contains(*v.sig) {
+			v.entities.Insert(e.entity)
 		}
 	}
 }
 
-// Filter appends all entities that match the view's signature to a buffer and returns it.
-// The buffer may be nil, and can be reused across calls to Filter to reduce allocation.
-func (v *View) Filter(buf []Entity) []Entity {
-	// NOTE(ongyx): this avoids alloc if the buffer already has an underlying array
-	buf = buf[:0]
+// Sort sorts the entities in the view.
+func (v *View) Sort(fn func(a, b Entity) bool) {
+	v.entities.Sort(fn)
+}
 
-	for e, sig := range v.world.entities {
-		if sig.Contains(v.sig) {
-			buf = append(buf, e)
-		}
+// Each iterates over the view's entities with the function fn.
+func (v *View) Each(fn func(e Entity)) {
+	for _, e := range v.entities.Dense() {
+		fn(e)
 	}
-
-	return buf
 }

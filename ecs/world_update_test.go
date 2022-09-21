@@ -42,7 +42,7 @@ func UpdateScene() *World {
 	text := Register[Text](w, 1)
 
 	e := w.Spawn()
-	text.Set(e, Text("Hello World!"))
+	text.Insert(e, Text("Hello World!"))
 
 	w.Register(&PrintSystem{})
 
