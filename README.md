@@ -11,9 +11,9 @@ Modularity is a key facet of Bento, allowing you to use Bento in your game's cod
 
 ## Requirements
 
-The minimum Go version is `1.18` for versions of Bento past v0.5.0.
+The minimum Go version is `1.18` for versions of Bento past 0.5.0.
 
-Bento version v0.5.0 was rewritten from scratch to take advantage of newer Go features such as generics.
+Bento version 0.5.0 was rewritten from scratch to take advantage of newer Go features such as generics.
 
 ## Getting Started
 
