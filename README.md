@@ -32,10 +32,13 @@ You may want to take a look at the [`examples`](examples/) too.
 
 Bento can be configured by specifying build tags when compiling or testing.
 
-Currently, the following tags are part of the public API:
+Some features require CGo to be enabled, which is the default for native builds.
+If you are [cross compiling](#cross-compiling), some setup is needed.
 
-* `discretegpu`: Prefer using the discrete GPU on Windows.
-  This requires CGo which is enabled by default on native builds, but some setup is needed for [cross compiling](#cross-compiling).
+Feature       | Description                               | CGo needed?
+---           | ---                                       | ---
+`discretegpu` | Prefer using the discrete GPU on Windows. | Y
+`ecs.debug`   | Enable debug logging to stdout for ECS.   | N
 
 ### Cross Compiling
 

@@ -1,7 +1,5 @@
 package ecs
 
-import "fmt"
-
 // Component represents a component pool of type T in a world.
 type Component[T any] struct {
 	world *World
@@ -62,7 +60,7 @@ func Register[T any](w *World, size int) *Component[T] {
 		panic("component: world is full")
 	}
 
-	fmt.Printf("ecs: registering %s with id %d\n", t.t.Name(), id)
+	logger.Printf("registering %s with id %d\n", t.t.Name(), id)
 
 	// add pool to world
 	p := NewPool[T](size)
