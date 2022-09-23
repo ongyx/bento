@@ -6,7 +6,7 @@
 
 ## Rationale
 
-TL;DR My original intent was to make a game, but I ended up creating a game framework ¯\_(ツ)_/¯
+TL;DR My original intent was to make a game, but I ended up creating a game framework `¯\_(ツ)_/¯`
 
 Ebitengine is great for making cross platform games because it abstracts away the low-level stuff.
 However, I think that a game framework would be beneficial for simplifying some aspects of game development with it.
