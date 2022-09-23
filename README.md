@@ -6,14 +6,16 @@
 
 ## Rationale
 
-Bento was created mainly to make gamedev with Ebitengine easier, by providing a framework of utilities to simplify common tasks.
-Modularity is a key facet of Bento, allowing you to use Bento in your game's codebase as you see fit.
+TL;DR My original intent was to make a game, but I ended up creating a game framework ¯\_(ツ)_/¯
+
+Ebitengine is great for making cross platform games because it abstracts away the low-level stuff.
+However, I think that a game framework would be beneficial for simplifying some aspects of game development with it.
+
+To this end, Bento aims to provide a modular framework of utilities.
 
 ## Requirements
 
 The minimum Go version is `1.18` for versions of Bento past 0.5.0.
-
-Bento version 0.5.0 was rewritten from scratch to take advantage of newer Go features such as generics.
 
 ## Getting Started
 
