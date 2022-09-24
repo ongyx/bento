@@ -39,8 +39,9 @@ If you are [cross compiling](#cross-compiling), some setup is needed.
 
 Feature       | Description                               | CGo needed?
 ---           | ---                                       | ---
-`discretegpu` | Prefer using the discrete GPU on Windows. | Y
-`ecs.debug`   | Enable debug logging to stdout for ECS.   | N
+`discretegpu` | Prefer using the discrete GPU on Windows  | Y
+`pprof`       | Enable pprof server on `localhost:6060`   | N
+`ecs.debug`   | Enable debug logging to stdout for ECS    | N
 
 ### Cross Compiling
 

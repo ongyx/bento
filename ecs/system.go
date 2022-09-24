@@ -8,7 +8,7 @@ type System interface {
 	Update(w *World) error
 }
 
-// Renderer is an opaque state that renders entities to the screen.
-type Renderer interface {
-	Render(w *World, i *ebiten.Image)
+// Drawer is an opaque state that draws entities to the screen.
+type Drawer interface {
+	Draw(w *World, i *ebiten.Image)
 }

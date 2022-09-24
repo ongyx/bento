@@ -14,8 +14,8 @@ type World struct {
 	// if there are no deleted entities, it is set to invalid.
 	deleted uint32
 
-	systems   []System
-	renderers []Renderer
+	systems []System
+	drawers []Drawer
 
 	init bool
 }
@@ -82,8 +82,8 @@ func (w *World) Despawn(e Entity) {
 func (w *World) Register(systems ...System) {
 	for _, s := range systems {
 		w.systems = append(w.systems, s)
-		if r, ok := s.(Renderer); ok {
-			w.renderers = append(w.renderers, r)
+		if r, ok := s.(Drawer); ok {
+			w.drawers = append(w.drawers, r)
 		}
 	}
 }
@@ -112,8 +112,8 @@ func (w *World) Update() error {
 // Draw renders all renderers to the screen in the order they were registered.
 // This implements the ebiten.Game interface.
 func (w *World) Draw(screen *ebiten.Image) {
-	for _, r := range w.renderers {
-		r.Render(w, screen)
+	for _, r := range w.drawers {
+		r.Draw(w, screen)
 	}
 }
 

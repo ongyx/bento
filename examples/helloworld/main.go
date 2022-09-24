@@ -38,9 +38,9 @@ func (p *PrintSystem) Update(w *ecs.World) error {
 	return nil
 }
 
-// Render is called once per frame, approximately 60 frames per second.
+// Draw is called once per frame, approximately 60 frames per second.
 // It is optional to implement this.
-func (p *PrintSystem) Render(w *ecs.World, img *ebiten.Image) {}
+func (p *PrintSystem) Draw(w *ecs.World, img *ebiten.Image) {}
 
 // Scenes are plain functions that create a world and performs setup on it.
 func scene() *ecs.World {

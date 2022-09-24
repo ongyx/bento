@@ -61,7 +61,7 @@ func (r *RenderSystem) Update(w *ecs.World) error {
 	return nil
 }
 
-func (r *RenderSystem) Render(w *ecs.World, img *ebiten.Image) {
+func (r *RenderSystem) Draw(w *ecs.World, img *ebiten.Image) {
 	pos := ecs.Query[Position](w)
 	tf := ecs.Query[Transform](w)
 	sprite := ecs.Query[Sprite](w)
