@@ -60,8 +60,6 @@ func Register[T any](w *World, size int) *Component[T] {
 		panic("component: world is full")
 	}
 
-	logger.Printf("registering %s with id %d\n", t.t.Name(), id)
-
 	// add pool to world
 	p := NewPool[T](size)
 	w.pools = append(w.pools, p)

@@ -16,9 +16,14 @@ func NewMap[K comparable, V any](size int) *Map[K, V] {
 	}
 }
 
-// Get returns a pointer to the value by key.
+// Get returns a pointer to the value by key,
+// or nil if the key is not in the map.
 func (m *Map[K, V]) Get(key K) *V {
-	return &m.values[m.keys.Index(key)]
+	if idx, ok := m.keys.Index(key); ok {
+		return &m.values[idx]
+	} else {
+		return nil
+	}
 }
 
 // Insert inserts the key and value into the map.
@@ -30,20 +35,22 @@ func (m *Map[K, V]) Insert(key K, value V) {
 // Delete removes the value from the sparse set.
 // This does not preserve order.
 func (m *Map[K, V]) Delete(key K) {
-	idx := m.keys.Index(key)
-	size := len(m.values)
+	if idx, ok := m.keys.Index(key); ok {
+		size := len(m.values)
 
-	// values are kept in sync with the dense index of the sparse set
-	// replace the deleted value with the last entry
-	m.values[idx] = m.values[size-1]
-	m.values = m.values[:size]
+		// values are kept in sync with the dense index of the sparse set
+		// replace the deleted value with the last entry
+		m.values[idx] = m.values[size-1]
+		m.values = m.values[:size]
 
-	m.keys.Delete(key)
+		m.keys.Delete(key)
+	}
 }
 
 // Contains checks if the map has the key.
 func (m *Map[K, V]) Contains(key K) bool {
-	return m.keys.Index(key) >= 0
+	_, ok := m.keys.Index(key)
+	return ok
 }
 
 // Sort sorts the map by its keys.

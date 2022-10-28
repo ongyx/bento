@@ -1,6 +1,6 @@
 package ecs
 
-import "github.com/ongyx/bento/ecs/sparse"
+import "github.com/ongyx/bento/internal/sparse"
 
 const viewSize = 10
 

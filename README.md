@@ -23,6 +23,9 @@ The minimum Go version is `1.18` for versions of Bento past 0.5.0.
 
 `go get github.com/ongyx/bento` should be sufficient to add it as a go.mod dependency.
 
+Alternatively, you may install the development branch of bento with `go get github.com/ongyx/bento@dev` instead to test out the newest features.
+However, they are not guaranteed to be stable until merged into `main`.
+
 ### Documentation
 
 The [API] documentation is a good place to start.
@@ -41,7 +44,6 @@ Feature       | Description                               | CGo needed?
 ---           | ---                                       | ---
 `discretegpu` | Prefer using the discrete GPU on Windows  | Y
 `pprof`       | Enable pprof server on `localhost:6060`   | N
-`ecs.debug`   | Enable debug logging to stdout for ECS    | N
 
 ### Cross Compiling
 

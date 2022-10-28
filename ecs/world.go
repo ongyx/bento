@@ -4,7 +4,7 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 const maxPools = 64
 
-// World contains all data related to entities, components and systemw.
+// World contains all data related to entities, components and systems.
 type World struct {
 	pools  []pool
 	poolID map[TypeID]uint8
@@ -20,7 +20,7 @@ type World struct {
 	init bool
 }
 
-// NewWorld creates a new world with (size) capacity for entitiew.
+// NewWorld creates a new world with (size) capacity for entities.
 func NewWorld(size int) *World {
 	return &World{
 		pools:  make([]pool, 0, maxPools),
@@ -61,7 +61,8 @@ func (w *World) Despawn(e Entity) {
 
 	id := entity.id
 
-	// make the entity ID a pointer to the previous deleted entity, if any
+	// set entity ID to the index of the previous deleted entity, if any
+	// this creates a pseudo-linked list
 	if w.deleted != invalid {
 		entity.id = w.deleted
 	} else {
@@ -82,6 +83,7 @@ func (w *World) Despawn(e Entity) {
 func (w *World) Register(systems ...System) {
 	for _, s := range systems {
 		w.systems = append(w.systems, s)
+
 		if r, ok := s.(Drawer); ok {
 			w.drawers = append(w.drawers, r)
 		}
@@ -102,7 +104,7 @@ func (w *World) Update() error {
 	}
 
 	if !w.init {
-		// all systems initalised by this point
+		// all systems initalized by this point
 		w.init = true
 	}
 
@@ -122,7 +124,7 @@ func (w *World) respawn(id uint32) Entity {
 	e := &w.entities[id].entity
 
 	// if entity ID is invalid, this is the end of the linked list
-	// otherwise, destroyed is set to the next deleted entity.
+	// otherwise, deleted is set to the next deleted entity.
 	if e.id == invalid {
 		w.deleted = invalid
 	} else {

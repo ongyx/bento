@@ -18,9 +18,16 @@ func NewSet[T comparable](size int) *Set[T] {
 	}
 }
 
-// Get returns the value in the dense array by index.
-func (s *Set[T]) Get(idx int) T {
-	return s.dense[idx]
+// Index returns the dense index of the value.
+// If the value is not in the sparse set, idx is -1 and ok is false.
+func (s *Set[T]) Index(value T) (idx int, ok bool) {
+	idx, ok = s.sparse[value]
+	if !ok {
+		// returning a negative index will always be out of bounds on purpose.
+		idx = -1
+	}
+
+	return
 }
 
 // Insert inserts the value into the sparse set.
@@ -41,16 +48,6 @@ func (s *Set[T]) Delete(value T) {
 	// remove entry for value in sparse and reslice dense
 	delete(s.sparse, value)
 	s.dense = s.dense[:size]
-}
-
-// Index returns the dense index of the value.
-// This returns -1 if the value is not in the sparse set.
-func (s *Set[T]) Index(value T) int {
-	if idx, ok := s.sparse[value]; ok {
-		return idx
-	} else {
-		return -1
-	}
 }
 
 // Dense returns the dense array of the set.
