@@ -7,25 +7,28 @@ import (
 // Timer is a tick-based scheduler for operations.
 // One tick is equivalent to a single frame, where 1 second is 60 frames.
 type Timer struct {
-	delta uint64
-	once  bool
+	delta, tick, count uint64
 
-	base  uint64
-	count int
+	once bool
 }
 
 // NewTimer creates a new timer that triggers every n seconds.
 // If once is true, the timer will only trigger once.
 func NewTimer(n float64, once bool) *Timer {
 	if n <= 0 {
-		panic(fmt.Sprintf("timer: negative n (%f)", n))
+		panic(fmt.Sprintf("timer: negative n %f", n))
 	}
 
 	if d := SecondToTick(n); d == 0 {
-		panic(fmt.Sprintf("timer: duration of n too small (%f)", n))
+		panic(fmt.Sprintf("timer: duration of n %f too small", n))
 	} else {
-		return &Timer{delta: uint64(d), once: once, base: Clock.Now()}
+		return &Timer{delta: uint64(d), once: once}
 	}
+}
+
+// Tick increments the timer.
+func (t *Timer) Tick() {
+	t.tick++
 }
 
 // Delta returns the number of ticks between each trigger.
@@ -33,11 +36,14 @@ func (t *Timer) Delta() uint64 {
 	return t.delta
 }
 
+// Count returns the number of times the timer has triggered.
+func (t *Timer) Count() uint64 {
+	return t.count
+}
+
 // Done checks if the timer has triggered.
 func (t *Timer) Done() bool {
-	ts := Clock.Now() - t.base
-
-	if ts != 0 && (ts%t.delta) == 0 {
+	if t.tick != 0 && (t.tick%t.delta) == 0 {
 		if t.once {
 			return t.count == 0
 		}

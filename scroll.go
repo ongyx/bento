@@ -2,18 +2,15 @@ package bento
 
 import (
 	"image"
-	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/text"
 )
 
 // Scroll allows several pieces of text to be scrolled across an image.
 // point is the bottom-left point of the scroll.
 type Scroll struct {
-	Font  *Font
-	Point image.Point
-	Color color.Color
+	Font        *Font
+	FontOptions *FontOptions
 
 	text  string
 	tpos  int
@@ -24,10 +21,10 @@ type Scroll struct {
 }
 
 // NewScroll creates a new scroll with the initial text.
-func NewScroll(font *Font, tx string) *Scroll {
-	s := &Scroll{Font: font, Color: color.White}
+func NewScroll(font *Font, txt string) *Scroll {
+	s := &Scroll{Font: font}
 	s.SetSpeed(0.03)
-	s.SetText(tx)
+	s.SetText(txt)
 
 	return s
 }
@@ -44,12 +41,12 @@ func (s *Scroll) Text() string {
 }
 
 // SetText changes the text currently scrolling.
-func (s *Scroll) SetText(tx string) {
-	size := text.BoundString(s.Font.Face, tx).Size()
+func (s *Scroll) SetText(txt string) {
+	size := s.Font.Size(txt)
 
-	s.text = tx
+	s.text = txt
 	s.tpos = 0
-	s.tend = len(tx)
+	s.tend = len(txt)
 	s.tsize = size
 }
 
@@ -70,18 +67,13 @@ func (s *Scroll) Size() image.Point {
 
 // Update updates the state of the scroll.
 func (s *Scroll) Update() {
+	s.timer.Tick()
 	if s.timer.Done() && s.tpos < s.tend {
 		s.tpos++
 	}
 }
 
 // Draw renders the scroll on a new image.
-func (s *Scroll) Draw(img *ebiten.Image) {
-	t := s.text
-
-	if s.tpos < s.tend {
-		t = t[:s.tpos]
-	}
-
-	s.Font.Draw(t, s.Color, img, s.Point)
+func (s *Scroll) Draw(img *ebiten.Image, op *ebiten.DrawImageOptions) {
+	s.Font.Draw(s.text[:s.tpos], img, op)
 }
